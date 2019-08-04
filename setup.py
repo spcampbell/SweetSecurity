@@ -162,6 +162,8 @@ if __name__ == "__main__":
 
     if installType == '1':
         # Bro IDS, Critical Stack, ELK Stack, Apache, Sweet Security
+        
+        # Prompt to install Critical Stack
         criticalStackInstalled = False
         if os.path.isfile('/usr/bin/critical-stack-intel'):
             criticalStackInstalled = True
@@ -182,11 +184,17 @@ if __name__ == "__main__":
                         print("        Not a valid API key.")
                     else:
                         break
+        
+        # install BRO
         bro.install(chosenInterface, 'localhost')
+        
+        # install Critical Stack
         if criticalStackInstalled == False and installCriticalStack.lower() == 'y':
             criticalStack.install(csKey)
         else:
             print "Skipping Critical Stack Install"
+
+        # install Fail2Ban
         # Check if We Should Install Fail2Ban
         # while True:
         #	installFail2Ban = get_user_input("\033[1mInstall Fail2Ban (Y/n)\033[0m: ")
@@ -196,11 +204,16 @@ if __name__ == "__main__":
         #		break
         # if installFail2Ban == 'y' or installFail2Ban == '':
         #	fail2ban.install()
+        
+        # install Apache
         apache.install(installType, chosenInterface, chosenInterfaceIP)
         print "  Creating web portal credentials"
         os.popen('sudo htpasswd -cb /etc/apache2/.htpasswd %s "%s"' % (httpUser, httpPass)).read()
         os.popen('sudo htpasswd -cb /etc/apache2/.elasticsearch %s "%s"' % (elasticUser, elasticPass)).read()
+        
         # Get system default configurations
+        
+        # install FileCheckIO
         fileCheckKey = None
         while True:
             installFileCheck = get_user_input("\033[1mCheck Files Against FileCheck.IO (y/N)\033[0m: ")
@@ -216,22 +229,35 @@ if __name__ == "__main__":
                     print("        Not a valid API key.")
                 else:
                     break
+        
+        # install ElasticSearch
         elasticSearch.install(fileCheckKey)
+
+        # install Kibana and restart Apache
         kibana.install(chosenInterfaceIP)
         print "Restarting Apache"
         os.popen('sudo service apache2 restart').read()
+
+        # install Logstash
         logstash.install('localhost', elasticUser, elasticPass)
+
+        # install Sweet Security Client and start
         sweetSecurity.installClient(chosenInterface)
         sweetSecurity.addWebCreds('localhost', httpUser, httpPass,'client')
         print "Starting SweetSecurity Client"
         os.popen('sudo service sweetsecurity restart').read()
+
+        # install Sweet Security Server and start
         sweetSecurity.installServer()
         sweetSecurity.addWebCreds('localhost', httpUser, httpPass, 'server')
         print "Starting SweetSecurity Server"
         os.popen('sudo service sweetsecurity_server restart').read()
+   
     elif installType == '2':
         # Bro IDS, Critical Stack, Logstash, Sweet Security
         esServer = get_user_input('\033[1mEnter Server IP:\033[0m ')
+        
+        # prompt for Critical Stack install
         criticalStackInstalled = False
         if os.path.isfile('/usr/bin/critical-stack-intel'):
             criticalStackInstalled = True
@@ -252,16 +278,26 @@ if __name__ == "__main__":
                         print("        Not a valid API key.")
                     else:
                         break
+       
         if not validateIP(esServer):
             sys.exit('Not a valid IP Address')
+
+        # install Bro
         bro.install(chosenInterface, esServer)
+
+        # install Critical Stack
         if criticalStackInstalled == False and installCriticalStack.lower() == 'y':
             criticalStack.install(csKey)
+
+        # install logstash
         logstash.install(esServer, elasticUser, elasticPass)
+
+        # install Sweet Security Client and start
         sweetSecurity.installClient(chosenInterface)
         sweetSecurity.addWebCreds(esServer, httpUser, httpPass,'client')
         print "Starting SweetSecurity"
         os.popen('sudo service sweetsecurity restart').read()
+    
     elif installType == '3':
         # Elasticsearch, Kibana, Apache
         # Check if We Should Install Fail2Ban
@@ -271,12 +307,18 @@ if __name__ == "__main__":
                 print "Must choose Y or N."
             else:
                 break
+        
+        # install Fail2Ban
         if installFail2Ban == 'y' or installFail2Ban == '':
             fail2ban.install()
+        
+        # install Apache
         apache.install(installType, chosenInterface, chosenInterfaceIP)
         print "  Creating web portal credentials"
         os.popen('sudo htpasswd -cb /etc/apache2/.htpasswd %s "%s"' % (httpUser, httpPass)).read()
         os.popen('sudo htpasswd -cb /etc/apache2/.elasticsearch %s "%s"' % (elasticUser, elasticPass)).read()
+        
+        # prompt for FileCheckIO install
         fileCheckKey = None
         while True:
             installFileCheck = get_user_input("\033[1mCheck Files Against FileCheck.IO (y/N)\033[0m: ")
@@ -292,11 +334,17 @@ if __name__ == "__main__":
                     print("        Not a valid API key.")
                 else:
                     break
+        
+        # install Elasticsearch
         elasticSearch.install(fileCheckKey)
         print "  Creating elasticsearch credentials"
+
+        # install Kibana and restart Apache
         kibana.install(chosenInterfaceIP)
         print "Restarting Apache"
         os.popen('sudo service apache2 restart').read()
+
+        # install Sweet Security Server
         sweetSecurity.installServer()
         sweetSecurity.addWebCreds('localhost', httpUser, httpPass, 'server')
         print "Starting SweetSecurity Server"
