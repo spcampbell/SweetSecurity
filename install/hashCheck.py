@@ -10,8 +10,8 @@ def getHash(fileName):
         return '47d7707b1b8feb490276fd69b597d27af610d28b'
     elif fileName == 'logstash-5.5.1.deb':
         return '88fbe43065cfaa6b13374f8f4a69f871b7110208'
-    elif fileName == 'bro-2.5.1.tar.gz':
-        return '9c133dd3a075be1084f9bf53d79c42ddcf23633c'
+    elif fileName == 'bro-2.6.2.tar.gz':
+        return '528aac3d8966db2513738e75d9b35f53fbe253df'
     return ''
 
 def checkHash(fileName):
