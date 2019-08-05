@@ -1,5 +1,7 @@
 
-## Fork of Travis Smith Sweet Security - Refactoring for Rasp Pi 4 and lastest application versions
+## Fork of Travis Smith Sweet Security
+## Refactoring for Rasp Pi 4 and lastest application versions
+## WORK IN PROGRESS
 
 # SweetSecurity
 
