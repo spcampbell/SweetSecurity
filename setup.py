@@ -85,7 +85,7 @@ if __name__ == "__main__":
         if memAvailable < 1800:
             sys.exit('Less than 2GB of memory available.  Consider splitting installs across multiple devices.')
 
-    # Install prerequisites
+    # Install prerequisites (this is where all the apt-get install commands occur)
     packages.install(installType)
 
     interfaces = os.listdir('/sys/class/net/')
